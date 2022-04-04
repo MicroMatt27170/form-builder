@@ -1,10 +1,26 @@
 <template>
-$END$
+  <div>
+
+  </div>
 </template>
 
 <script>
 export default {
-name: "FormVisualizer"
+  name: "FormVisualizer",
+  props: {
+
+  },
+  data() {
+    return {
+
+    }
+  },
+  mounted() {
+
+  },
+  methods: {
+
+  }
 }
 </script>
 
