@@ -55,7 +55,7 @@ export default {
         type: 'container',
         uuid: this.uuidv4(),
         level: 1,
-        col: 12,
+        column: 12,
         header: 'Encabezado '+(this.formDesign.length + 1),
         content: []
       }
