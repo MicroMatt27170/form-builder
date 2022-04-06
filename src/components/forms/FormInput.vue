@@ -1,11 +1,11 @@
 <template>
   <div :class="containerClass">
-    <label :for="id"
+    <label :for="uuid"
            class="form-label text-start w-100"
            v-text="label"></label>
     <input :type="inputType"
            class="form-control"
-           :id="id"
+           :id="uuid"
            :placeholder="placeholder"
            :value="value"
            @input="onInput">
@@ -20,7 +20,7 @@ export default {
       default: "text",
       type: String
     },
-    id: String,
+    uuid: String,
     column: {
       default: 12,
       type: Number
