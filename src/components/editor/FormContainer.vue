@@ -42,7 +42,7 @@
             <button @click="addContainer" type="button" class="btn btn-primary">+ Contenedor</button>
           </div>
           <div class="btn-group me-2" role="group" aria-label="Texto">
-            <button type="button" class="btn btn-outline-secondary">Texto</button>
+            <button type="button" class="btn btn-outline-secondary" @click="addInput">Texto</button>
             <button type="button" class="btn btn-outline-secondary">Párrafo</button>
             <button type="button" class="btn btn-outline-secondary">Texto Largo</button>
           </div>
@@ -59,24 +59,35 @@
       </div>
     </div>
     <div class="card-body">
-      <draggable v-for="element in content" :key="element.uuid">
-        <form-container v-if="element.type === 'container'"
-                        :header.sync="element.header"
-                        :level.sync="element.level"
-                        :column.sync="element.column"
-                        :content.sync="element.content"
-                        :key="element.uuid"/>
-      </draggable>
+      <div v-for="element in content" :key="element.uuid">
+        <draggable v-if="element.type === 'container'"
+                   :key="element.uuid">
+          <form-container :header.sync="element.header"
+                          :level.sync="element.level"
+                          :column.sync="element.column"
+                          :content.sync="element.content"/>
+        </draggable>
+        <form-input v-if="element.type === 'input'"
+                    :input-type.sync="element.inputType"
+                    :label.sync="element.label"
+                    :column.sync="element.column"
+                    :name.sync="element.name"
+                    :placeholder.sync="element.placeholder"
+                    :validation.sync="element.validation"
+                    :id.sync="element.uuid"/>
+      </div>
+
     </div>
   </div>
 </template>
 
 <script>
 import draggable from 'vuedraggable'
+import FormInput from "./FormInput";
 
 export default {
   name: "FormContainer",
-  components: { draggable },
+  components: {FormInput, draggable },
   props: {
     header: String,
     level: Number,
@@ -107,6 +118,24 @@ export default {
     }
   },
   methods: {
+    addInput() {
+      this.contentProp.push({
+        type: 'input',
+        inputType: 'text',
+        uuid: this.uuidv4(),
+        column: 12,
+        label: 'Formulario',
+        name: 'input-prop-'+this.content.length,
+        placeholder: '',
+        validation: {
+          min: 0,
+          max: 255,
+          nullable: false,
+          required: false,
+          default: null,
+        }
+      })
+    },
     addContainer() {
       let c = {
         type: 'container',
