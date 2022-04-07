@@ -7,11 +7,8 @@
       <div class="row">
         <component v-for="el in content"
                    :is="getComponent(el.type)"
-                   :key="el.uuid"
-                   :level="el.level"
-                   :header="el.header"
-                   :column="el.column"
-                   :content="el.content">
+                   v-bind="el"
+                   :key="el.uuid">
 
         </component>
       </div>
@@ -20,7 +17,7 @@
 </template>
 
 <script>
- import FormInput from '../editor/FormInput'
+ import FormInput from './FormInput'
 export default {
   name: "FormContainer",
   props: {
@@ -44,7 +41,7 @@ export default {
     getComponent(type) {
       switch (type) {
         case 'container': return 'FormContainer'
-        case 'editor': return FormInput
+        case 'input': return FormInput
       }
     }
   }

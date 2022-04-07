@@ -12,8 +12,8 @@
         </div>
         <div class="flex-grow-1">
           <div class="row">
-            <label class="col-sm-2 col-form-label text-end">Encabezado</label>
-            <div class="col-sm-10">
+            <label class="col-md-3 col-form-label text-end">Encabezado</label>
+            <div class="col-md-9">
               <div class="input-group mb-3">
                 <input type="text" class="form-control" placeholder="Encabezado del contenedor" v-model="headerProp">
                 <button class="btn btn-secondary dropdown-toggle"
@@ -38,19 +38,19 @@
     <div class="card-header">
       <div class="d-flex flex-row p-2">
         <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
-          <div class="btn-group me-2" role="group" aria-label="Contenedores">
+          <div class="btn-group btn-group-sm me-2 mt-1" role="group" aria-label="Contenedores">
             <button @click="addContainer" type="button" class="btn btn-primary">+ Contenedor</button>
           </div>
-          <div class="btn-group me-2" role="group" aria-label="Texto">
+          <div class="btn-group btn-group-sm me-2 mt-1" role="group" aria-label="Texto">
             <button type="button" class="btn btn-outline-secondary" @click="addInput">Texto</button>
             <button type="button" class="btn btn-outline-secondary">Párrafo</button>
             <button type="button" class="btn btn-outline-secondary">Texto Largo</button>
           </div>
-          <div class="btn-group me-2" role="group" aria-label="Número">
+          <div class="btn-group btn-group-sm me-2 mt-1" role="group" aria-label="Número">
             <button type="button" class="btn btn-outline-secondary">Número</button>
             <button type="button" class="btn btn-outline-secondary">Rango Númerico</button>
           </div>
-          <div class="btn-group me-2" role="group" aria-label="Número">
+          <div class="btn-group btn-group-sm me-2 mt-1" role="group" aria-label="Número">
             <button type="button" class="btn btn-outline-secondary">Selector</button>
             <button type="button" class="btn btn-outline-secondary">Radio</button>
             <button type="button" class="btn btn-outline-secondary">Casillas</button>
@@ -59,35 +59,23 @@
       </div>
     </div>
     <div class="card-body">
-      <div v-for="element in content" :key="element.uuid">
-        <draggable v-if="element.type === 'container'"
-                   :key="element.uuid">
-          <form-container :header.sync="element.header"
-                          :level.sync="element.level"
-                          :column.sync="element.column"
-                          :content.sync="element.content"/>
-        </draggable>
-        <form-input v-if="element.type === 'input'"
-                    :input-type.sync="element.inputType"
-                    :label.sync="element.label"
-                    :column.sync="element.column"
-                    :name.sync="element.name"
-                    :placeholder.sync="element.placeholder"
-                    :validation.sync="element.validation"
-                    :id.sync="element.uuid"/>
-      </div>
+      <component v-for="element in content"
+                 :is="getComponent(element.type)"
+                 v-bind="element"
+                 :key="element.uuid">
+
+      </component>
 
     </div>
   </div>
 </template>
 
 <script>
-import draggable from 'vuedraggable'
 import FormInput from "./FormInput";
 
 export default {
   name: "FormContainer",
-  components: {FormInput, draggable },
+  components: { FormInput },
   props: {
     header: String,
     level: Number,
@@ -118,8 +106,16 @@ export default {
     }
   },
   methods: {
+    getComponent(type) {
+      switch (type) {
+        case 'container': return 'FormContainer'
+        case 'input': return FormInput
+        default: return null
+      }
+    },
     addInput() {
-      this.contentProp.push({
+
+      let obj = {
         type: 'input',
         inputType: 'text',
         uuid: this.uuidv4(),
@@ -134,7 +130,11 @@ export default {
           required: false,
           default: null,
         }
-      })
+      }
+
+      let len = this.contentProp.push(obj)
+
+      this.$set(this.contentProp, len - 1, obj)
     },
     addContainer() {
       let c = {
@@ -146,7 +146,9 @@ export default {
         content: []
       }
 
-      this.contentProp.push(c)
+      let len = this.contentProp.push(c)
+
+      this.$set(this.contentProp, len - 1, c)
     },
     uuidv4() {
       return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
