@@ -1,52 +1,55 @@
 <template>
-  <div class="card mt-2">
-    <div class="card-header">
-      <div class="d-flex justify-content-between">
-        <div>
-          <div class="input-group mb-3">
-            <span class="input-group-text">Columna(s)</span>
-            <select class="form-select me-3" aria-label=".form-select-lg example" v-model="columnProp">
-              <option v-for="ind in 12" :value="ind" :key="ind">{{ ind }}</option>
-            </select>
-          </div>
-        </div>
-        <div class="m-1 ms-3">
-          <button type="button" class="btn-close" aria-label="Close"></button>
-        </div>
-      </div>
+  <editor-container v-model:column="columnProp">
+    <view-input v-model="labelProp"
+                placeholder="Título del campo"
+                label="Título del campo"
+                :uuid="labelInputUuid"
+                :column="6" />
 
-    </div>
-    <div class="card-body">
-      <div class="row">
-        <div class="col-md-8">
+    <view-input v-model="nameProp"
+                placeholder="Nombre en la base de datos"
+                label="Nombre de la propiedad"
+                :uuid="nameInputUuid"
+                :column="6" />
 
-        </div>
-        <div class="col-md-4">
-          <div class="row">
-            <div class="">
-              <h5>Ejemplo</h5>
-              <view-input :placeholder="placeholder"
-                          :validation="validation"
-                          :input-type="inputType"
-                          :column="column"
-                          :label="label"
-                          :name="name"
-                          :id="uuid"/>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+    <view-input v-model="placeholderProp"
+                placeholder="Placeholder"
+                label="Placeholder"
+                :uuid="placeholderInputUuid"
+                :column="6" />
+
+    <view-selector v-model="inputTypeProp"
+                   :uuid="inputTypeInputUuid"
+                   placeholder="Tipo de entrada"
+                   label="Tipo de entrada"
+                   :select-options="inputTypeOpts"
+                   :column="6"/>
+
+    <template v-slot:example>
+      <h5>Ejemplo</h5>
+      <view-input :placeholder="placeholder"
+                  :validation="validation"
+                  :input-type="inputType"
+                  :column="12"
+                  :label="label"
+                  :name="name"
+                  :id="uuid"/>
+    </template>
+  </editor-container>
 </template>
 
 <script>
-import FormInput from "../forms/FormInput";
+import FormInput from "../forms/ViewInput";
+import FormSelector from "../forms/ViewSelector";
+import "vue-select/dist/vue-select.css";
+import EditorContainer from "./components/EditorContainer";
 
 export default {
   name: "FormInput",
   components: {
-    'viewInput': FormInput
+    EditorContainer,
+    'viewInput': FormInput,
+    'viewSelector': FormSelector
   },
   props: {
     inputType: {
@@ -68,17 +71,45 @@ export default {
   },
   data() {
     return {
-
+      nameInputUuid: this.uuidv4(),
+      placeholderInputUuid: this.uuidv4(),
+      labelInputUuid: this.uuidv4(),
+      inputTypeInputUuid: this.uuidv4(),
+      inputTypeOpts: [
+        { value: 'text', text: 'Texto' },
+        { value: 'number', text: 'Número' },
+        { value: 'email', text: 'Correo electrónico' },
+        { value: 'phone', text: 'Teléfono' },
+      ]
     }
   },
   computed: {
     columnProp: {
       get() { return this.column },
       set(h) {
-        console.log('column updated!', h);
         this.$emit('update:column', h)
       }
     },
+    inputTypeProp: {
+      get() { return this.inputType },
+      set(x) { this.$emit('update:inputType', x) }
+    },
+    labelProp: {
+      get() { return this.label },
+      set(x) { this.$emit('update:label', x) }
+    },
+    nameProp: {
+      get() { return this.name },
+      set(x) { this.$emit('update:name', x) }
+    },
+    placeholderProp: {
+      get() { return this.placeholder },
+      set(x) { this.$emit('update:placeholder', x) }
+    },
+    validationProp: {
+      get() { return this.validation },
+      set(x) { this.$emit('update:validation', x) }
+    }
   },
   methods: {
 

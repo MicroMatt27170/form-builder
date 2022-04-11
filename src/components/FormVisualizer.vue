@@ -1,7 +1,7 @@
 <template>
   <div class="container-fluid">
     <div v-for="el in formDesign" :key="el.uuid">
-      <form-container v-if="el.type === 'container'"
+      <view-container v-if="el.type === 'container'"
                       :level="el.level"
                       :header="el.header"
                       :column="el.column"
@@ -11,10 +11,10 @@
 </template>
 
 <script>
-import FormContainer from "./forms/FormContainer";
+import ViewContainer from "./forms/ViewContainer";
 export default {
   name: "FormVisualizer",
-  components: {FormContainer},
+  components: {ViewContainer},
   props: {
     formDesignProp: {
       type: Array,

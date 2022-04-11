@@ -11,14 +11,10 @@
     </nav>
 
     <div class="container">
-      <vue-draggable>
-        <form-container v-for="fd in formDesign"
-                        :header.sync="fd.header"
-                        :level.sync="fd.level"
-                        :column.sync="fd.column"
-                        :content.sync="fd.content"
-                        :key="fd.uuid"/>
-      </vue-draggable>
+      <form-container v-for="fd in formDesign"
+                      v-bind="fd"
+                      :container-deep="0"
+                      :key="fd.uuid"/>
     </div>
 
 
@@ -27,13 +23,12 @@
 
 <script>
 import FormContainer from "./editor/FormContainer";
-import draggable from 'vuedraggable'
+import { reactive } from "vue";
 
 export default {
   name: "FormEditor",
   components: {
     FormContainer,
-    'vue-draggable': draggable
   },
   props: {
     formDesignProp: {
@@ -60,7 +55,7 @@ export default {
         content: []
       }
 
-      this.formDesign.push(c)
+      this.formDesign.push(reactive(c))
     },
     uuidv4() {
       return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>

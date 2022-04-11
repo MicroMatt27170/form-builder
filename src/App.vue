@@ -13,7 +13,7 @@
       </div>
     </nav>
     <div class="container-fluid" v-if="isEditor">
-      <form-editor :form-design-prop.sync="formDesign"/>
+      <form-editor v-model:form-design-prop="formDesign"/>
     </div>
     <div class="container-fluid" v-else>
       <form-visualizer :form-design-prop="formDesign"/>

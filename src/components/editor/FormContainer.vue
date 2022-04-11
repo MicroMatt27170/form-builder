@@ -43,7 +43,7 @@
           </div>
           <div class="btn-group btn-group-sm me-2 mt-1" role="group" aria-label="Texto">
             <button type="button" class="btn btn-outline-secondary" @click="addInput">Texto</button>
-            <button type="button" class="btn btn-outline-secondary">Párrafo</button>
+            <button type="button" class="btn btn-outline-secondary" >Párrafo</button>
             <button type="button" class="btn btn-outline-secondary">Texto Largo</button>
           </div>
           <div class="btn-group btn-group-sm me-2 mt-1" role="group" aria-label="Número">
@@ -51,7 +51,7 @@
             <button type="button" class="btn btn-outline-secondary">Rango Númerico</button>
           </div>
           <div class="btn-group btn-group-sm me-2 mt-1" role="group" aria-label="Número">
-            <button type="button" class="btn btn-outline-secondary">Selector</button>
+            <button type="button" class="btn btn-outline-secondary" @click="addSelector">Selector</button>
             <button type="button" class="btn btn-outline-secondary">Radio</button>
             <button type="button" class="btn btn-outline-secondary">Casillas</button>
           </div>
@@ -60,9 +60,23 @@
     </div>
     <div class="card-body">
       <component v-for="element in content"
+                 :key="element.uuid"
                  :is="getComponent(element.type)"
-                 v-bind="element"
-                 :key="element.uuid">
+                 :container-deep="containerDeep + 1"
+                 v-model:header="element.header"
+                 v-model:level="element.level"
+                 v-model:column="element.column"
+                 v-model:content="element.content"
+                 v-model:inputType="element.inputType"
+                 v-model:uuid="element.uuid"
+                 v-model:label="element.label"
+                 v-model:name="element.name"
+                 v-model:placeholder="element.placeholder"
+                 v-model:validation="element.validation"
+                 v-model:selectOptions="element.selectOptions"
+                 v-model:isArray="element.isArray"
+                 v-model:searchable="element.searchable"
+                 v-bind="element">
 
       </component>
 
@@ -72,6 +86,9 @@
 
 <script>
 import FormInput from "./FormInput";
+import FormSelector from "./FormSelector";
+
+import {reactive} from "vue";
 
 export default {
   name: "FormContainer",
@@ -80,11 +97,12 @@ export default {
     header: String,
     level: Number,
     column: Number,
-    content: Array
+    content: Array,
+    containerDeep: Number
   },
   data() {
     return {
-      types: [1, 2, 3, 4]
+      types: [1, 2, 3, 4],
     }
   },
   computed: {
@@ -110,6 +128,7 @@ export default {
       switch (type) {
         case 'container': return 'FormContainer'
         case 'input': return FormInput
+        case 'selector': return FormSelector
         default: return null
       }
     },
@@ -132,9 +151,24 @@ export default {
         }
       }
 
-      let len = this.contentProp.push(obj)
+      this.contentProp.push(reactive(obj))
 
-      this.$set(this.contentProp, len - 1, obj)
+    },
+    addSelector() {
+      this.contentProp.push(reactive({
+        type: 'selector',
+        inputType: 'text',
+        uuid: this.uuidv4(),
+        column: 12,
+        label: 'Selector',
+        options: [],
+        name: 'selector-prop-'+this.content.length,
+        validation: {
+          nullable: false,
+          required: false,
+          default: null,
+        }
+      }))
     },
     addContainer() {
       let c = {
@@ -146,9 +180,8 @@ export default {
         content: []
       }
 
-      let len = this.contentProp.push(c)
+      this.contentProp.push(reactive(c))
 
-      this.$set(this.contentProp, len - 1, c)
     },
     uuidv4() {
       return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
