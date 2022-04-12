@@ -41,7 +41,7 @@ export default {
   methods: {
     getComponent(type) {
       switch (type) {
-        case 'container': return 'FormContainer'
+        case 'container': return 'ViewContainer'
         case 'input': return FormInput
       }
     }
