@@ -13,43 +13,25 @@
                 :uuid="nameInputUuid"
                 :column="6" />
 
-    <view-input v-model="placeholderProp"
-                placeholder="Placeholder"
-                label="Placeholder"
-                :uuid="placeholderInputUuid"
-                :column="6" />
-
-    <view-input v-model="textareaRowsProp"
-                placeholder="Número de filas"
-                label="Número de filas"
-                :uuid="textareaRowsUuid"
-                input-type="number"
-                :column="6" />
-
     <template v-slot:example>
-      <view-textarea v-bind="$props"/>
+      <view-checkbox v-bind="$props" />
     </template>
   </editor-container>
 </template>
 
 <script>
 import EditorContainer from "./components/EditorContainer";
-import ViewTextarea from "../forms/ViewTextarea";
+import ViewCheckbox from "../forms/ViewCheckbox";
 import ViewInput from "../forms/ViewInput";
 export default {
-  name: "FormTextarea",
-  components: {ViewInput, ViewTextarea, EditorContainer},
+  name: "FormCheckbox",
+  components: {ViewInput, ViewCheckbox, EditorContainer},
   props: {
     uuid: String,
-    column: {
-      default: 12,
-      type: Number
-    },
     label: String,
     name: String,
-    placeholder: String,
-    textareaRows: {
-      default: 5,
+    column: {
+      default: 12,
       type: Number
     },
     validation: {
@@ -59,10 +41,8 @@ export default {
   },
   data() {
     return {
-      nameInputUuid: this.uuidv4(),
-      placeholderInputUuid: this.uuidv4(),
       labelInputUuid: this.uuidv4(),
-      textareaRowsUuid: this.uuidv4()
+      nameInputUuid: this.uuidv4(),
     }
   },
   computed: {
@@ -76,23 +56,15 @@ export default {
       get() { return this.label },
       set(x) { this.$emit('update:label', x) }
     },
-    textareaRowsProp: {
-      get() { return this.textareaRows },
-      set(x) { this.$emit('update:textareaRows', x) }
-    },
     nameProp: {
       get() { return this.name },
       set(x) { this.$emit('update:name', x) }
-    },
-    placeholderProp: {
-      get() { return this.placeholder },
-      set(x) { this.$emit('update:placeholder', x) }
     },
     validationProp: {
       get() { return this.validation },
       set(x) { this.$emit('update:validation', x) }
     }
-  },
+  }
 }
 </script>
 
