@@ -42,43 +42,61 @@
             <button @click="addContainer" type="button" class="btn btn-primary">+ Contenedor</button>
           </div>
           <div class="btn-group btn-group-sm me-2 mt-1" role="group" aria-label="Texto">
-            <button type="button" class="btn btn-outline-secondary" @click="addInput">Texto</button>
-            <button type="button" class="btn btn-outline-secondary" >Párrafo</button>
-            <button type="button" class="btn btn-outline-secondary">Texto Largo</button>
+            <button class="btn btn-outline-secondary"
+                    type="button"
+                    @click="addInput">Texto</button>
+            <button class="btn btn-outline-secondary"
+                    type="button"
+                    @click="addTextarea">Párrafo</button>
           </div>
+
           <div class="btn-group btn-group-sm me-2 mt-1" role="group" aria-label="Número">
-            <button type="button" class="btn btn-outline-secondary">Número</button>
-            <button type="button" class="btn btn-outline-secondary">Rango Númerico</button>
-          </div>
-          <div class="btn-group btn-group-sm me-2 mt-1" role="group" aria-label="Número">
-            <button type="button" class="btn btn-outline-secondary" @click="addSelector">Selector</button>
-            <button type="button" class="btn btn-outline-secondary">Radio</button>
-            <button type="button" class="btn btn-outline-secondary">Casillas</button>
+            <button class="btn btn-outline-secondary"
+                    type="button"
+                    @click="addSelector">Selector</button>
+            <button class="btn btn-outline-secondary"
+                    type="button">Radio</button>
+            <button class="btn btn-outline-secondary"
+                    type="button"
+                    @click="addCheckbox">Casillas</button>
           </div>
         </div>
       </div>
     </div>
     <div class="card-body">
-      <component v-for="element in content"
-                 :key="element.uuid"
-                 :is="getComponent(element.type)"
-                 :container-deep="containerDeep + 1"
-                 v-model:header="element.header"
-                 v-model:level="element.level"
-                 v-model:column="element.column"
-                 v-model:content="element.content"
-                 v-model:inputType="element.inputType"
-                 v-model:uuid="element.uuid"
-                 v-model:label="element.label"
-                 v-model:name="element.name"
-                 v-model:placeholder="element.placeholder"
-                 v-model:validation="element.validation"
-                 v-model:selectOptions="element.selectOptions"
-                 v-model:isArray="element.isArray"
-                 v-model:searchable="element.searchable"
-                 v-bind="element">
+      <div class="row">
+        <editor-element v-bind="element"
+                        v-model:column="element.column"
+                        v-for="element in content.filter(x => x.type !== 'container')"
+                        @edit="editElementUuid = $event"
+                        @close="removeElementEditor(element.uuid)"
+                        :key="element.uuid"/>
+      </div>
 
-      </component>
+      <editor-modal v-model:show="modalShow"
+                    @on-close="editElementUuid = null"
+                    ref="editModal">
+        <component v-if="editSelected != null"
+                   :is="getComponent(editSelected.type)"
+                   :container-deep="containerDeep + 1"
+                   v-model:header="editSelected.header"
+                   v-model:level="editSelected.level"
+                   v-model:column="editSelected.column"
+                   v-model:content="editSelected.content"
+                   v-model:inputType="editSelected.inputType"
+                   v-model:uuid="editSelected.uuid"
+                   v-model:label="editSelected.label"
+                   v-model:name="editSelected.name"
+                   v-model:placeholder="editSelected.placeholder"
+                   v-model:validation="editSelected.validation"
+                   v-model:selectOptions="editSelected.selectOptions"
+                   v-model:isArray="editSelected.isArray"
+                   v-model:searchable="editSelected.searchable"
+                   v-model:textareaRows="editSelected.textareaRows"
+                   v-bind="editSelected">
+
+        </component>
+      </editor-modal>
 
     </div>
   </div>
@@ -89,10 +107,14 @@ import FormInput from "./FormInput";
 import FormSelector from "./FormSelector";
 
 import {reactive} from "vue";
+import EditorElement from "./components/EditorElement";
+import EditorModal from "./components/EditorModal";
+import FormCheckbox from "./FormCheckbox";
+import FormTextarea from "./FormTextarea";
 
 export default {
   name: "FormContainer",
-  components: { FormInput },
+  components: {EditorModal, EditorElement, FormInput },
   props: {
     header: String,
     level: Number,
@@ -103,9 +125,24 @@ export default {
   data() {
     return {
       types: [1, 2, 3, 4],
+      elementUuid: null,
+      modalShow: false,
     }
   },
   computed: {
+    editElementUuid: {
+      get() { return  this.elementUuid },
+      set(uuid) {
+        let x = this.content.find(f => f.uuid === uuid)
+        if (x == null) {
+          this.elementUuid = null
+        }
+        else {
+          this.$refs.editModal.showModal()
+          this.elementUuid = uuid
+        }
+      }
+    },
     headerProp: {
       get() { return this.header },
       set(h) { this.$emit('update:header', h) }
@@ -121,14 +158,26 @@ export default {
     contentProp: {
       get() { return this.content },
       set(c) { this.$emit('update:content', c) }
-    }
+    },
+    editSelected() {
+      return this.content.find(f => f.uuid === this.editElementUuid)
+    },
   },
   methods: {
+    removeElementEditor(uuid) {
+      let ind = this.contentProp.findIndex(f => f.uuid === uuid)
+
+      if (ind > -1) {
+        this.contentProp.splice(ind, 1)
+      }
+    },
     getComponent(type) {
       switch (type) {
         case 'container': return 'FormContainer'
         case 'input': return FormInput
         case 'selector': return FormSelector
+        case 'checkbox': return FormCheckbox
+        case 'textarea': return FormTextarea
         default: return null
       }
     },
@@ -140,7 +189,7 @@ export default {
         uuid: this.uuidv4(),
         column: 12,
         label: 'Formulario',
-        name: 'input-prop-'+this.content.length,
+        name: 'input_prop_'+this.content.length+'_'+this.randNum(),
         placeholder: '',
         validation: {
           min: 0,
@@ -154,6 +203,38 @@ export default {
       this.contentProp.push(reactive(obj))
 
     },
+    addTextarea() {
+      this.contentProp.push(reactive({
+        type: 'textarea',
+        uuid: this.uuidv4(),
+        column: 12,
+        textareaRows: 5,
+        label: 'Formulario',
+        name: 'textarea_prop_'+this.content.length+'_'+this.randNum(),
+        placeholder: '',
+        validation: {
+          min: 0,
+          max: 255,
+          nullable: false,
+          required: false,
+          default: null,
+        }
+      }))
+    },
+    addCheckbox() {
+      this.contentProp.push(reactive({
+        type: 'checkbox',
+        uuid: this.uuidv4(),
+        label: 'Casilla',
+        name: 'checkbox_prop_'+this.content.length+'_'+this.randNum(),
+        column: 12,
+        validation: {
+          nullable: false,
+          required: false,
+          default: false
+        }
+      }))
+    },
     addSelector() {
       this.contentProp.push(reactive({
         type: 'selector',
@@ -161,8 +242,10 @@ export default {
         uuid: this.uuidv4(),
         column: 12,
         label: 'Selector',
-        options: [],
-        name: 'selector-prop-'+this.content.length,
+        selectOptions: [],
+        name: 'selector_prop_'+this.content.length+'_'+this.randNum(),
+        isArray: false,
+        searchable: false,
         validation: {
           nullable: false,
           required: false,
@@ -187,6 +270,9 @@ export default {
       return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
           (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
       );
+    },
+    randNum(l = 4) {
+      return parseInt((Math.random() * (10 ** l)).toString())
     }
   }
 }

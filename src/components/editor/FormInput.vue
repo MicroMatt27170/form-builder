@@ -26,21 +26,14 @@
                    :column="6"/>
 
     <template v-slot:example>
-      <h5>Ejemplo</h5>
-      <view-input :placeholder="placeholder"
-                  :validation="validation"
-                  :input-type="inputType"
-                  :column="12"
-                  :label="label"
-                  :name="name"
-                  :id="uuid"/>
+      <view-input v-bind="$props"/>
     </template>
   </editor-container>
 </template>
 
 <script>
-import FormInput from "../forms/ViewInput";
-import FormSelector from "../forms/ViewSelector";
+import ViewInput from "../forms/ViewInput";
+import ViewSelector from "../forms/ViewSelector";
 import "vue-select/dist/vue-select.css";
 import EditorContainer from "./components/EditorContainer";
 
@@ -48,8 +41,8 @@ export default {
   name: "FormInput",
   components: {
     EditorContainer,
-    'viewInput': FormInput,
-    'viewSelector': FormSelector
+    ViewInput,
+    ViewSelector
   },
   props: {
     inputType: {

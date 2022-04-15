@@ -17,7 +17,10 @@
 </template>
 
 <script>
- import FormInput from './ViewInput'
+ import ViewInput from './ViewInput'
+ import ViewSelector from "./ViewSelector";
+ import ViewCheckbox from "./ViewCheckbox";
+ import ViewTextarea from "./ViewTextarea";
 export default {
   name: "ViewContainer",
   props: {
@@ -42,7 +45,10 @@ export default {
     getComponent(type) {
       switch (type) {
         case 'container': return 'ViewContainer'
-        case 'input': return FormInput
+        case 'input': return ViewInput
+        case 'selector': return ViewSelector
+        case 'checkbox': return ViewCheckbox
+        case 'textarea': return ViewTextarea
       }
     }
   }

@@ -11,7 +11,7 @@
           </div>
         </div>
         <div class="m-1 ms-3">
-          <button type="button" class="btn-close" aria-label="Close"></button>
+<!--          <button type="button" class="btn-close" aria-label="Close"></button>-->
         </div>
       </div>
 
@@ -19,14 +19,16 @@
 
     <div class="card-body">
       <div class="row">
-        <div class="col-md-8">
+        <div class="col-md-12">
           <div class="row">
-            <slot></slot>
+            <h5 v-text="exampleTitle"></h5>
+            <slot name="example"></slot>
           </div>
         </div>
-        <div class="col-md-4">
+        <hr>
+        <div class="col-md-12">
           <div class="row">
-            <slot name="example"></slot>
+            <slot></slot>
           </div>
         </div>
       </div>
@@ -38,7 +40,11 @@
 export default {
   name: "EditorContainer",
   props: {
-    column: Number
+    column: Number,
+    exampleTitle: {
+      default: 'Ejemplo',
+      type: String
+    }
   },
   computed: {
     columnProp: {
