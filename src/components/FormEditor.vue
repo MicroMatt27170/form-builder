@@ -13,6 +13,10 @@
     <div class="container">
       <form-container v-for="fd in formDesign"
                       v-bind="fd"
+                      v-model:header="fd.header"
+                      v-model:level="fd.level"
+                      v-model:column="fd.column"
+                      v-model:content="fd.content"
                       :container-deep="0"
                       :key="fd.uuid"/>
     </div>

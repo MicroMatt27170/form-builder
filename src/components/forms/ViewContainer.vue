@@ -21,6 +21,7 @@
  import ViewSelector from "./ViewSelector";
  import ViewCheckbox from "./ViewCheckbox";
  import ViewTextarea from "./ViewTextarea";
+ import ViewRadio from "./ViewRadio";
 export default {
   name: "ViewContainer",
   props: {
@@ -49,6 +50,7 @@ export default {
         case 'selector': return ViewSelector
         case 'checkbox': return ViewCheckbox
         case 'textarea': return ViewTextarea
+        case 'radio': return ViewRadio
       }
     }
   }

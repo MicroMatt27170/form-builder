@@ -31,7 +31,10 @@
           </div>
         </div>
         <div class="m-1 ms-3">
-          <button type="button" class="btn-close" aria-label="Close"></button>
+          <button type="button"
+                  class="btn-close"
+                  aria-label="Close"
+                  @click="$emit('close')"></button>
         </div>
       </div>
     </div>
@@ -55,7 +58,7 @@
                     type="button"
                     @click="addSelector">Selector</button>
             <button class="btn btn-outline-secondary"
-                    type="button">Radio</button>
+                    type="button" @click="addRadio">Radio</button>
             <button class="btn btn-outline-secondary"
                     type="button"
                     @click="addCheckbox">Casillas</button>
@@ -65,12 +68,17 @@
     </div>
     <div class="card-body">
       <div class="row">
-        <editor-element v-bind="element"
-                        v-model:column="element.column"
-                        v-for="element in content.filter(x => x.type !== 'container')"
-                        @edit="editElementUuid = $event"
-                        @close="removeElementEditor(element.uuid)"
-                        :key="element.uuid"/>
+        <component v-for="element in contentProp"
+                   :is="getComponentView(element.type)"
+                   :container-deep="containerDeep + 1"
+                   @edit="editElementUuid = $event"
+                   @close="removeElementEditor(element.uuid)"
+                   :key="element.uuid"
+                   v-model:header="element.header"
+                   v-model:level="element.level"
+                   v-model:column="element.column"
+                   v-model:content="element.content"
+                   v-bind="element"/>
       </div>
 
       <editor-modal v-model:show="modalShow"
@@ -93,6 +101,7 @@
                    v-model:isArray="editSelected.isArray"
                    v-model:searchable="editSelected.searchable"
                    v-model:textareaRows="editSelected.textareaRows"
+                   v-model:radioInline="editSelected.radioInline"
                    v-bind="editSelected">
 
         </component>
@@ -111,6 +120,7 @@ import EditorElement from "./components/EditorElement";
 import EditorModal from "./components/EditorModal";
 import FormCheckbox from "./FormCheckbox";
 import FormTextarea from "./FormTextarea";
+import FormRadio from "./FormRadio";
 
 export default {
   name: "FormContainer",
@@ -164,6 +174,9 @@ export default {
     },
   },
   methods: {
+    getComponentView(type) {
+      return (type === 'container') ? 'FormContainer' : EditorElement
+    },
     removeElementEditor(uuid) {
       let ind = this.contentProp.findIndex(f => f.uuid === uuid)
 
@@ -178,12 +191,12 @@ export default {
         case 'selector': return FormSelector
         case 'checkbox': return FormCheckbox
         case 'textarea': return FormTextarea
+        case 'radio': return FormRadio
         default: return null
       }
     },
     addInput() {
-
-      let obj = {
+      this.contentProp.push(reactive({
         type: 'input',
         inputType: 'text',
         uuid: this.uuidv4(),
@@ -198,10 +211,7 @@ export default {
           required: false,
           default: null,
         }
-      }
-
-      this.contentProp.push(reactive(obj))
-
+      }))
     },
     addTextarea() {
       this.contentProp.push(reactive({
@@ -253,18 +263,31 @@ export default {
         }
       }))
     },
+    addRadio() {
+      this.contentProp.push(reactive({
+        type: 'radio',
+        uuid: this.uuidv4(),
+        name: 'radio_prop_'+this.content.length+'_'+this.randNum(),
+        column: 12,
+        radioInline: false,
+        label: 'Radio',
+        selectOptions: [],
+        validation: {
+          nullable: false,
+          required: false,
+          default: null,
+        }
+      }))
+    },
     addContainer() {
-      let c = {
+      this.contentProp.push(reactive({
         type: 'container',
         uuid: this.uuidv4(),
-        level: 2,
+        level: this.containerDeep >= 3 ? 4 : this.containerDeep + 1,
         column: 12,
         header: 'Encabezado '+(this.contentProp.filter(c => c.type === 'container').length + 1),
         content: []
-      }
-
-      this.contentProp.push(reactive(c))
-
+      }))
     },
     uuidv4() {
       return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
