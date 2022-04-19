@@ -47,6 +47,7 @@ export default {
         case 'checkbox': return '#7ed527'
         case 'textarea': return '#0f6ab8'
         case 'radio': return '#e3e31a'
+        case 'file': return '#d31b45'
         default: return '#c49741'
       }
     },

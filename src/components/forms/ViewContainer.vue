@@ -22,6 +22,7 @@
  import ViewCheckbox from "./ViewCheckbox";
  import ViewTextarea from "./ViewTextarea";
  import ViewRadio from "./ViewRadio";
+ import ViewFile from "@/components/forms/ViewFile";
 export default {
   name: "ViewContainer",
   props: {
@@ -51,6 +52,7 @@ export default {
         case 'checkbox': return ViewCheckbox
         case 'textarea': return ViewTextarea
         case 'radio': return ViewRadio
+        case 'file': return ViewFile
       }
     }
   }

@@ -63,6 +63,12 @@
                     type="button"
                     @click="addCheckbox">Casillas</button>
           </div>
+
+          <div class="btn-group btn-group-sm me-2 mt-1" role="group" aria-label="Archivo">
+            <button class="btn btn-outline-secondary"
+                    type="button"
+                    @click="addFile">Archivo</button>
+          </div>
         </div>
       </div>
     </div>
@@ -121,6 +127,7 @@ import EditorModal from "./components/EditorModal";
 import FormCheckbox from "./FormCheckbox";
 import FormTextarea from "./FormTextarea";
 import FormRadio from "./FormRadio";
+import FormFile from "@/components/editor/FormFile";
 
 export default {
   name: "FormContainer",
@@ -192,6 +199,7 @@ export default {
         case 'checkbox': return FormCheckbox
         case 'textarea': return FormTextarea
         case 'radio': return FormRadio
+        case 'file': return FormFile
         default: return null
       }
     },
@@ -256,6 +264,21 @@ export default {
         name: 'selector_prop_'+this.content.length+'_'+this.randNum(),
         isArray: false,
         searchable: false,
+        validation: {
+          nullable: false,
+          required: false,
+          default: null,
+        }
+      }))
+    },
+    addFile() {
+      this.contentProp.push(reactive({
+        type: 'file',
+        uuid: this.uuidv4(),
+        column: 12,
+        label: 'Archivo',
+        name: 'file_prop_'+this.content.length+'_'+this.randNum(),
+        isArray: false,
         validation: {
           nullable: false,
           required: false,
