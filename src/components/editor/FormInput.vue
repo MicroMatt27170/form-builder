@@ -25,6 +25,34 @@
                    :select-options="inputTypeOpts"
                    :column="6"/>
 
+    <hr>
+
+    <ViewInput v-model="validationProp.min"
+               placeholder="0"
+               label="Valor mínimo"
+               input-type="number"
+               :column="4"
+               :validation="{min: 0, max: validationProp.max}"/>
+
+
+    <ViewInput v-model="validationProp.max"
+               placeholder="255"
+               label="Valor mínimo"
+               input-type="number"
+               :column="4"
+               :validation="{min: validationProp.max, max: null}"/>
+
+    <ViewCheckbox v-model="validationProp.nullable"
+                  label="Nulo permitido"
+                  :column="4"/>
+
+    <ViewInput v-model="validationProp.default"
+               placeholder=""
+               label="Valor por defecto"
+               :input-type="inputTypeProp"
+               :validation="validationProp"/>
+
+
     <template v-slot:example>
       <view-input v-bind="$props"/>
     </template>
@@ -36,10 +64,13 @@ import ViewInput from "../forms/ViewInput";
 import ViewSelector from "../forms/ViewSelector";
 import "vue-select/dist/vue-select.css";
 import EditorContainer from "./components/EditorContainer";
+import ViewCheckbox from "../forms/ViewCheckbox";
+import {ref} from "vue";
 
 export default {
   name: "FormInput",
   components: {
+    ViewCheckbox,
     EditorContainer,
     ViewInput,
     ViewSelector
@@ -102,6 +133,10 @@ export default {
     validationProp: {
       get() { return this.validation },
       set(x) { this.$emit('update:validation', x) }
+    },
+    validationMin: {
+      get() { return this.validation.min },
+      set(x) { this.validationProp.min = ref(x) }
     }
   },
   methods: {

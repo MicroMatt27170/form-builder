@@ -1,11 +1,11 @@
 <template>
   <div :class="containerClass">
-    <label :for="uuid"
+    <label :for="uuidProp"
            class="form-label text-start w-100"
            v-text="label"></label>
     <input :type="inputType"
            class="form-control"
-           :id="uuid"
+           :id="uuidProp"
            :name="name"
            :placeholder="placeholder"
            v-model="inputData">
@@ -38,10 +38,13 @@ export default {
   },
   data() {
     return {
-
+      uuidGenerate: this.uuidv4()
     }
   },
   computed: {
+    uuidProp() {
+      return this.uuid ? this.uuid : this.uuidGenerate
+    },
     containerClass() {
       return [
           'mb-3',

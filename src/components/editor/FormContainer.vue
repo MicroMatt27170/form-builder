@@ -216,7 +216,6 @@ export default {
           min: 0,
           max: 255,
           nullable: false,
-          required: false,
           default: null,
         }
       }))
@@ -234,7 +233,6 @@ export default {
           min: 0,
           max: 255,
           nullable: false,
-          required: false,
           default: null,
         }
       }))
@@ -248,7 +246,6 @@ export default {
         column: 12,
         validation: {
           nullable: false,
-          required: false,
           default: false
         }
       }))
@@ -266,7 +263,6 @@ export default {
         searchable: false,
         validation: {
           nullable: false,
-          required: false,
           default: null,
         }
       }))
@@ -281,7 +277,6 @@ export default {
         isArray: false,
         validation: {
           nullable: false,
-          required: false,
           default: null,
         }
       }))
@@ -297,7 +292,6 @@ export default {
         selectOptions: [],
         validation: {
           nullable: false,
-          required: false,
           default: null,
         }
       }))

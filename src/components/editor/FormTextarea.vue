@@ -26,6 +26,32 @@
                 input-type="number"
                 :column="6" />
 
+    <hr>
+
+    <ViewInput v-model="validationProp.min"
+               placeholder="0"
+               label="Valor mínimo"
+               input-type="number"
+               :column="4"
+               :validation="{min: 0, max: validationProp.max}"/>
+
+
+    <ViewInput v-model="validationProp.max"
+               placeholder="255"
+               label="Valor mínimo"
+               input-type="number"
+               :column="4"
+               :validation="{min: validationProp.max, max: null}"/>
+
+    <ViewCheckbox v-model="validationProp.nullable"
+                  label="Nulo permitido"
+                  :column="4"/>
+
+    <ViewTextarea v-model="validationProp.default"
+                  placeholder=""
+                  label="Valor por defecto"
+                  :validation="validationProp"/>
+
     <template v-slot:example>
       <view-textarea v-bind="$props"/>
     </template>
@@ -36,9 +62,11 @@
 import EditorContainer from "./components/EditorContainer";
 import ViewTextarea from "../forms/ViewTextarea";
 import ViewInput from "../forms/ViewInput";
+import ViewCheckbox from "../forms/ViewCheckbox";
+
 export default {
   name: "FormTextarea",
-  components: {ViewInput, ViewTextarea, EditorContainer},
+  components: {ViewInput, ViewTextarea, EditorContainer, ViewCheckbox },
   props: {
     uuid: String,
     column: {
